@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>iRanger</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --g9:#14532D;--g8:#15803D;--g7:#16A34A;--g6:#22C55E;--gl:#DCFCE7;--g50:#F0FDF4;
+  --amb:#D97706;--ambl:#FEF3C7;
+  --bg:#F1F5F9;--srf:#FFFFFF;--brd:#E2E8F0;--brds:#94A3B8;
+  --t1:#0F172A;--t2:#1E293B;--t3:#64748B;
+  --crit:#8B1A1A;--critb:#FEF2F2;
+  --high:#9A3412;--highb:#FFF7ED;
+  --med:#92400E;--medb:#FFFBEB;
+  --low:#166534;--lowb:#F0FDF4;
+  --r:12px;--rs:8px;--sb:240px;
+}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);margin:0;padding:0}
+@supports(height:100dvh){html,body{height:100dvh}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:16px;color:var(--t1)}
+
+/* ═══════════════ LOGIN ═══════════════ */
+#login{height:100%;display:flex;flex-direction:column;background:#15803D;overflow-y:auto}
+.lt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px 28px}
+.ll{font-family:system-ui,sans-serif;font-weight:800;font-size:52px;font-weight:600;color:#fff;letter-spacing:.04em;margin-bottom:6px}
+.ls{font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:44px}
+.lc{width:100%;max-width:400px;background:#fff;border-radius:20px;padding:28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.lc h2{font-size:19px;font-weight:800;color:var(--t1);margin-bottom:22px}
+.fl{display:block;font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.fi{width:100%;border:2px solid var(--brd);border-radius:var(--rs);padding:13px 15px;font-size:16px;font-weight:600;font-family:inherit;color:var(--t1);background:#fff;outline:none;transition:border-color .15s;appearance:none;margin-bottom:16px}
+.fi:focus{border-color:var(--g8)}
+.fsel{background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6960' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.btnp{width:100%;padding:15px;background:var(--g8);color:#fff;border:none;border-radius:var(--rs);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.01em}
+.btnp:active{background:var(--g7)}
+.lu{padding:0 28px 36px}
+.lu p{font-size:12px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.ucs{display:flex;flex-wrap:wrap;gap:9px;max-width:600px}
+.uc{display:flex;align-items:center;gap:9px;padding:9px 16px;background:rgba(255,255,255,.11);border:1.5px solid rgba(255,255,255,.18);border-radius:40px;cursor:pointer;color:#fff;font-size:14px;font-weight:700}
+.uc:active{background:rgba(255,255,255,.22)}
+.ucav{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════════ SHELL ═══════════════ */
+#shell{height:100%;display:none;flex-direction:column;width:100%}
+.cw{display:flex;flex-direction:column;flex:1;min-width:0;overflow-x:hidden}
+#shell.on{display:flex}
+
+/* Mobile header */
+#hdr{height:54px;background:var(--g8);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;color:#fff}
+.hl{font-family:system-ui,sans-serif;font-weight:800;font-size:24px;font-weight:600;letter-spacing:.04em;flex:1}
+.hbdg{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85)}
+.hav{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0}
+.ondot{width:8px;height:8px;border-radius:50%;background:#4ADE80}
+.offdot{width:8px;height:8px;border-radius:50%;background:#FCD34D}
+
+/* ═══════════════ DESKTOP SIDEBAR ═══════════════ */
+#sidebar{display:none;width:var(--sb);background:#14532D;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-brand{padding:24px 20px 16px;display:flex;align-items:center;gap:10px}
+.sb-logo{font-family:system-ui,sans-serif;font-weight:800;font-size:26px;font-weight:600;color:#fff;letter-spacing:.04em;flex:1}
+.sb-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;cursor:pointer}
+.sb-user:hover{background:rgba(255,255,255,.05)}
+.sb-av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-name{font-size:15px;font-weight:700;color:#fff}
+.sb-role{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.04em}
+#sb-nav{padding:12px 0;flex:1}
+.sbn{display:flex;align-items:center;gap:12px;padding:13px 20px;cursor:pointer;color:rgba(255,255,255,.6);font-size:15px;font-weight:600;transition:all .15s;border-left:3px solid transparent;position:relative}
+.sbn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.sbn.on{background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--g6)}
+.sbn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sbn-badge{position:absolute;right:16px;background:var(--crit);color:#fff;font-size:10px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.sb-fab{margin:16px 20px;padding:14px;background:var(--g6);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;text-align:center;letter-spacing:.01em}
+.sb-fab:hover{background:var(--g7)}
+.sb-bottom{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-status{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4)}
+
+/* Mobile bottom nav */
+#nav{height:68px;background:var(--srf);border-top:1.5px solid var(--brd);display:flex;align-items:stretch;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;color:var(--t3);font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 2px;transition:color .15s;position:relative}
+.nb.on{color:var(--g8)}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nb-badge{position:absolute;top:5px;right:calc(50% - 20px);background:var(--crit);color:#fff;font-size:9px;font-weight:800;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+/* Center FAB */
+.nb-fab{flex:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;cursor:pointer;border:none;background:none}
+.nb-fab-inner{width:56px;height:56px;border-radius:50%;background:var(--g8);border:3px solid var(--srf);box-shadow:0 4px 16px rgba(26,82,48,.35);display:flex;align-items:center;justify-content:center;position:relative;top:-12px}
+.nb-fab-inner svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
+
+/* ═══════════════ MAIN CONTENT ═══════════════ */
+#main{flex:1;overflow-y:auto;min-height:0}
+#main::-webkit-scrollbar{width:4px}
+#main::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+
+/* ═══════════════ VIEWS ═══════════════ */
+.view{padding:20px;display:flex;flex-direction:column;gap:14px}
+.sec{font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:2px 0}
+
+/* Incident cards */
+.inc-card{background:var(--srf);border-radius:var(--r);border:1px solid var(--brd);cursor:pointer;transition:transform .1s,box-shadow .1s;overflow:hidden}
+.inc-card.mine{background:#FFFBEB;border-color:#F59E0B;box-shadow:0 0 0 2px #FDE68A}
+.inc-card.mine:hover{box-shadow:0 2px 12px rgba(245,158,11,.25),0 0 0 2px #FDE68A}
+.mine-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:#78350F;background:#FDE68A;padding:2px 8px;border-radius:20px;letter-spacing:.03em}
+.inc-card:active{transform:scale(.98)}
+.inc-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.icp{display:flex;align-items:flex-start;gap:13px;padding:16px}
+.sevbar{width:5px;border-radius:3px;align-self:stretch;flex-shrink:0;min-height:48px}
+.ib{flex:1;min-width:0}
+.it{font-size:16px;font-weight:800;color:var(--t1);margin-bottom:6px;line-height:1.3}
+.im{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.stch{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.03em}
+.tych{font-size:13px;font-weight:600;color:var(--t3)}
+.ias{font-size:13px;font-weight:700;color:var(--g8)}
+.itm{font-size:12px;font-weight:500;color:var(--t3);margin-top:4px}
+
+/* Cards generic */
+.card{background:var(--srf);border-radius:var(--r);border:1px solid var(--brd);overflow:hidden}
+
+/* Empty state */
+.empty{display:flex;flex-direction:column;align-items:center;padding:64px 32px;text-align:center;gap:14px}
+.em-ic{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center}
+.em-ic svg{width:30px;height:30px;stroke:var(--g8);fill:none;stroke-width:1.8;stroke-linecap:round}
+.em-t{font-size:18px;font-weight:800;color:var(--t2)}
+.em-s{font-size:14px;font-weight:500;color:var(--t3);line-height:1.6}
+
+/* Dashboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dc{background:var(--srf);border-radius:var(--r);border:1px solid var(--brd);padding:18px;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.dc:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.dc:active{transform:scale(.97)}
+.dn{font-family:system-ui,sans-serif;font-weight:800;font-size:42px;font-weight:600;line-height:1;margin-bottom:6px}
+.dl{font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+.dsa{font-size:12px;font-weight:600;color:var(--g8);margin-top:4px}
+
+/* Activity */
+.ai{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--brd)}
+.ai:last-child{border-bottom:none}
+.av-sm{width:34px;height:34px;border-radius:50%;background:var(--gl);border:1.5px solid var(--g6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--g8);flex-shrink:0;cursor:pointer}
+.av-sm:hover{background:var(--g8);color:#fff}
+.ac-b{flex:1}
+.ac-t{font-size:14px;font-weight:600;color:var(--t2);line-height:1.4}
+.ac-n{font-size:12px;font-weight:500;color:var(--t3);margin-top:2px}
+.ac-ts{font-size:11px;font-weight:600;color:var(--t3);margin-top:2px}
+
+/* Team */
+.tr{display:flex;align-items:center;gap:13px;padding:14px 18px;border-bottom:1px solid var(--brd);cursor:pointer;transition:background .1s}
+.tr:last-child{border-bottom:none}
+.tr:hover{background:var(--bg)}
+.tr:active{background:var(--gl)}
+.av-med{width:44px;height:44px;border-radius:50%;background:var(--gl);border:2px solid var(--g6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--g8);flex-shrink:0}
+.tn{font-size:15px;font-weight:800;color:var(--t1)}
+.tr-role{font-size:13px;font-weight:600;color:var(--t3)}
+.ts-wrap{margin-left:auto;text-align:right}
+.ts-n{font-size:18px;font-weight:800;color:var(--g8)}
+.ts-l{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.04em}
+
+/* Obs */
+.oc{display:flex;gap:13px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--brd)}
+.oc:last-child{border-bottom:none}
+.odot{width:11px;height:11px;border-radius:50%;background:var(--g8);flex-shrink:0;margin-top:5px}
+.ot{font-size:15px;font-weight:800;color:var(--t1)}
+.on2{font-size:13px;font-weight:500;color:var(--t2);margin-top:3px}
+.om{font-size:12px;font-weight:600;color:var(--t3);margin-top:5px}
+.oph{width:64px;height:64px;border-radius:var(--rs);object-fit:cover;flex-shrink:0}
+
+/* Filter */
+.fscroll{overflow-x:auto;padding:0 20px 6px;margin-bottom:-4px;background:var(--srf);border-bottom:1px solid var(--brd);width:100%;scrollbar-width:none;-ms-overflow-style:none}.fscroll::-webkit-scrollbar{display:none}
+.fscroll::-webkit-scrollbar{display:none}
+.frow{display:flex;gap:7px;width:max-content;padding:12px 0}
+.fp{padding:7px 16px;border-radius:20px;border:2px solid var(--brd);background:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--t3);white-space:nowrap;transition:all .15s}
+.fp.on{background:var(--g8);color:#fff;border-color:var(--g8)}
+
+/* Profilee hero */
+.ph{background:var(--g8);padding:36px 24px 28px;display:flex;flex-direction:column;align-items:center;gap:12px;color:#fff;text-align:center}
+.p-av{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
+.p-n{font-family:system-ui,sans-serif;font-weight:800;font-size:26px;font-weight:600;letter-spacing:.02em}
+.p-r{font-size:13px;font-weight:700;opacity:.65;letter-spacing:.09em;text-transform:uppercase}
+.p-stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;border-top:1px solid rgba(255,255,255,.15);padding-top:18px;margin-top:4px;gap:0}
+.p-stat{text-align:center}
+.p-sn{font-size:24px;font-weight:800}
+.p-sl{font-size:11px;font-weight:700;opacity:.55;letter-spacing:.05em}
+.mr{display:flex;align-items:center;gap:13px;padding:15px 20px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--brd)}
+.mr:last-child{border-bottom:none}
+.mr:active{background:var(--bg)}
+.m-ic{width:38px;height:38px;border-radius:var(--rs);background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.m-ic svg{width:19px;height:19px;stroke:var(--g8);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.m-lbl{font-size:15px;font-weight:700;color:var(--t1)}
+.m-sub{font-size:13px;font-weight:500;color:var(--t3)}
+.m-arr{margin-left:auto;color:var(--t3);font-size:18px}
+
+/* ═══════════════ MODALS ═══════════════ */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:flex-end}
+.mbg.on{display:flex}
+.msh{background:var(--srf);border-radius:20px 20px 0 0;width:100%;max-height:93vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);will-change:transform}
+.mbg.on .msh{transform:translateY(0)}
+.mh{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:12px auto 0}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px}
+.mt{font-family:system-ui,sans-serif;font-weight:800;font-size:22px;font-weight:500;color:var(--t1);letter-spacing:.02em}
+.mc{width:34px;height:34px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3)}
+.mc svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.mb{flex:1;overflow-y:auto;padding:0 22px 24px}
+.mb::-webkit-scrollbar{display:none}
+.mf{padding:18px 22px;border-top:1.5px solid var(--brd)}
+
+/* Form elements in modal */
+.fr{margin-bottom:18px}
+.fr label{display:block;font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.fr input,.fr select,.fr textarea{width:100%;border:2px solid var(--brd);border-radius:var(--rs);padding:13px 15px;font-size:16px;font-weight:600;font-family:inherit;color:var(--t1);background:#fff;outline:none;transition:border-color .15s;appearance:none}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--g8)}
+.fr select{background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B6960' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.fr textarea{resize:none;min-height:88px;line-height:1.55}
+.gps-r{display:flex;align-items:center;gap:9px;padding:11px 14px;background:var(--gl);border-radius:var(--rs);border:1.5px solid #BDD8C7;margin-bottom:18px}
+.gps-r svg{width:16px;height:16px;stroke:var(--g8);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.gps-r span{font-size:13px;font-weight:700;color:var(--g8)}
+.pbtn{display:flex;align-items:center;gap:10px;padding:13px 15px;border:2px dashed var(--brd);border-radius:var(--rs);background:none;cursor:pointer;width:100%;font-family:inherit;font-size:15px;font-weight:700;color:var(--t3);margin-bottom:18px;transition:all .15s}
+.pbtn:hover{border-color:var(--g8);color:var(--g8)}
+.pbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.pprev{width:100%;height:170px;object-fit:cover;border-radius:var(--rs);margin-bottom:18px;display:none}
+.sbs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.sb2{padding:11px;border-radius:var(--rs);border:2px solid var(--brd);background:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:800;color:var(--t2);transition:all .15s;text-align:center}
+.sb2.on{border-width:2px}
+/* Buttons */
+.btn-p{width:100%;padding:15px;background:var(--g8);color:#fff;border:none;border-radius:var(--rs);font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;transition:background .15s}
+.btn-p:active{background:var(--g7)}
+.btn-o{background:none;border:2px solid var(--brd);color:var(--t2);border-radius:var(--rs);padding:11px 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn-o:active{background:var(--bg)}
+.btn-r{background:var(--critb);color:var(--crit);border:2px solid #FECACA;border-radius:var(--rs);padding:11px 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+.arow{display:flex;gap:9px}
+
+/* Detail modal */
+.dsb{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--gl);border-bottom:1px solid #BDD8C7;margin:0 -22px 18px}
+.dsl{font-size:12px;font-weight:800;color:var(--g8);letter-spacing:.07em;text-transform:uppercase}
+.dsc{font-size:13px;font-weight:800;padding:4px 13px;border-radius:20px}
+.det-sec{margin-bottom:22px}
+.dsh{font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:11px;padding-bottom:7px;border-bottom:1.5px solid var(--brd)}
+.dmr{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--brd)}
+.dmr:last-child{border-bottom:none}
+.dmk{font-size:13px;font-weight:700;color:var(--t3)}
+.dmv{font-size:14px;font-weight:800;color:var(--t1);text-align:right;max-width:60%}
+.al{display:flex;gap:10px;margin-bottom:14px}
+.adot{width:9px;height:9px;border-radius:50%;background:var(--g8);flex-shrink:0;margin-top:5px}
+.aa{font-size:14px;font-weight:700;color:var(--t2)}
+.an{font-size:13px;font-weight:500;color:var(--t3);margin-top:2px}
+.ats{font-size:12px;font-weight:600;color:var(--t3);margin-top:1px}
+.asel{width:100%;border:2px solid var(--g8);border-radius:var(--rs);padding:11px 15px;font-size:15px;font-weight:700;font-family:inherit;color:var(--g8);background:var(--gl);outline:none;margin-bottom:11px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23236B3D' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.notein{width:100%;border:2px solid var(--brd);border-radius:var(--rs);padding:11px 13px;font-size:14px;font-family:inherit;color:var(--t1);outline:none;margin-bottom:11px;resize:none;min-height:64px}
+.notein:focus{border-color:var(--g8)}
+
+/* Choose modal */
+.chgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:6px 0}
+.chcard{padding:26px 16px;border-radius:var(--r);border:2px solid var(--brd);background:var(--srf);cursor:pointer;text-align:center;transition:all .15s}
+.chcard:active{border-color:var(--g8);background:var(--gl)}
+.ch-ic{width:52px;height:52px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;margin:0 auto 13px}
+.ch-ic svg{width:26px;height:26px;stroke:var(--g8);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ch-l{font-size:15px;font-weight:800;color:var(--t1);margin-bottom:5px}
+.ch-s{font-size:13px;font-weight:500;color:var(--t3)}
+
+/* Account management */
+.urow{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--brd);cursor:pointer;transition:background .1s}
+.urow:last-child{border-bottom:none}
+.urow:hover{background:var(--bg)}
+.urow-av{width:40px;height:40px;border-radius:50%;background:var(--gl);border:2px solid var(--g6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--g8);flex-shrink:0}
+.urow-n{font-size:15px;font-weight:800;color:var(--t1)}
+.urow-r{font-size:13px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:3px}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(min-width:1024px){
+  /* Shell becomes a full-viewport grid: sidebar | content */
+  #shell.on{
+    display:grid!important;
+    grid-template-columns:var(--sb) 1fr;
+    height:100vh;
+    width:100vw;
+  }
+  #hdr,#nav{display:none!important}
+  #sidebar{
+    display:flex;
+    height:100vh;
+    overflow-y:auto;
+    grid-column:1;
+  }
+  .cw{
+    grid-column:2;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    min-width:0;
+    overflow:hidden;
+  }
+  #main{
+    flex:1;
+    overflow-y:auto;
+    min-height:0;
+  }
+  .fscroll{width:100%;box-sizing:border-box}
+  .view{padding:24px 32px;width:100%;box-sizing:border-box}
+  .inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+  .dash-grid{grid-template-columns:repeat(4,1fr)}
+  .mbg{left:var(--sb);align-items:center;justify-content:center;padding:24px}
+  .msh{border-radius:16px;max-width:600px;max-height:88vh;transform:translateY(16px) scale(.98)}
+  .mbg.on .msh{transform:translateY(0) scale(1)}
+  .mh{display:none}
+}
+@media(min-width:1400px){
+  .view{padding:28px 48px}
+  .inc-grid{grid-template-columns:1fr 1fr 1fr;gap:16px}
+}
+@media(min-width:1280px){
+  .view{padding:32px 40px}
+}
+@media(min-width:1280px){
+  .view{padding:32px 40px;max-width:1100px}
+}
+
+/* ═══ USER SELECT & PIN PAD ═══ */
+.user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;width:100%;max-width:520px}
+.ugcard{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.18);border-radius:14px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .18s}
+.ugcard:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.4);transform:translateY(-3px)}
+.ugcard:active{transform:scale(.96)}
+.ugav{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;margin:0 auto 10px}
+.ugname{font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3}
+.ugrole{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.07em;text-transform:uppercase}
+.pin-wrap{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:320px}
+.pin-user{text-align:center;margin-bottom:28px}
+.pin-av{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 12px}
+.pin-name{font-size:22px;font-weight:800;color:#fff}
+.pin-role{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;font-weight:700}
+.pin-dots{display:flex;gap:18px;justify-content:center;margin-bottom:10px}
+.pdot{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);transition:all .15s}
+.pdot.on{background:#fff;border-color:#fff;transform:scale(1.1)}
+.pin-err{color:#FCA5A5;font-size:13px;font-weight:700;text-align:center;margin-bottom:6px;height:20px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.shk{animation:shake .4s ease}
+.numpad{display:grid;grid-template-columns:repeat(3,76px);gap:10px;margin-top:16px}
+.nk{height:64px;width:76px;border-radius:14px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:24px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.nk:hover{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.4)}
+.nk:active{transform:scale(.9)}
+.nk-ok{background:rgba(255,255,255,.25);color:#fff;font-size:18px;font-weight:800}
+.nk-del{background:transparent;border-color:rgba(255,255,255,.1);font-size:20px}
+.pin-back{margin-top:22px;background:none;border:none;color:rgba(255,255,255,.5);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em}
+.pin-back:hover{color:rgba(255,255,255,.85)}
+/* ═══ ADMIN PANEL ═══ */
+.adm-row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--brd)}
+.adm-row:last-child{border-bottom:none}
+.adm-btns{display:flex;gap:7px;flex-shrink:0}
+.adm-btn{padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid;transition:all .15s}
+.adm-edit{background:var(--gl);color:var(--g8);border-color:var(--g6)}
+.adm-edit:hover{background:var(--g8);color:#fff;border-color:var(--g8)}
+.adm-del{background:var(--critb);color:var(--crit);border-color:#FECACA}
+.adm-del:hover{background:var(--crit);color:#fff}
+
+/* ═══ FIRST RUN SETUP ═══ */
+.fr-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px}
+.fr-logo{font-family:system-ui,sans-serif;font-size:48px;font-weight:800;color:#fff;letter-spacing:.02em;margin-bottom:8px}
+.fr-tag{font-size:12px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;margin-bottom:36px}
+.fr-card{width:100%;max-width:400px;background:#fff;border-radius:20px;padding:28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.fr-card h2{font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px}
+.fr-card p{font-size:13px;font-weight:500;color:#64748B;margin-bottom:24px;line-height:1.55}
+.fr-pin-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ═══ EXPORT MODAL ═══ */
+.exp-card{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:var(--r);border:1.5px solid var(--brd);cursor:pointer;transition:all .15s;background:var(--surface)}
+.exp-card:hover{border-color:var(--g8);background:var(--gl);transform:translateY(-1px)}
+.exp-card:active{transform:scale(.98)}
+.exp-icon{width:40px;height:40px;border-radius:var(--rs);background:var(--gl);border:1.5px solid #BDD8C7;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--g8);flex-shrink:0;font-family:monospace}
+.exp-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.exp-sub{font-size:12px;font-weight:500;color:var(--t3);line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="login"></div>
+  <div id="shell">
+    <div id="sidebar"></div>
+    <div class="cw">
+      <div id="hdr"></div>
+      <div id="main"></div>
+      <nav id="nav"></nav>
+    </div>
+  </div>
+</div>
+<div class="mbg" id="mbg" onclick="handleMBG(event)">
+  <div class="msh" id="msh">
+    <div class="mh"></div>
+    <div class="mhdr"><span class="mt" id="mtitle"></span><button class="mc" onclick="closeM()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mb" id="mbody"></div>
+    <div class="mf" id="mfooter" style="display:none"></div>
+  </div>
+</div>
+<input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
+
+<script>
+// ═══════════════ CONSTANTS ═══════════════
+const IT=[
+  {id:'poaching',hu:'Orvvadászat',en:'Poaching'},
+  {id:'injured',hu:'Sérült állat',en:'Injured Animal'},
+  {id:'fire',hu:'Tűz / Füst',en:'Fire / Smoke'},
+  {id:'dumping',hu:'Illegális hulladék',en:'Illegal Dumping'},
+  {id:'boundary',hu:'Határátlépés',en:'Boundary Violation'},
+  {id:'invasive',hu:'Inváziós faj',en:'Invasive Species'},
+  {id:'water',hu:'Vízszennyezés',en:'Water Pollution'},
+  {id:'other',hu:'Egyéb',en:'Other'},
+];
+const OT=[
+  {id:'species',hu:'Fajmegfigyelés',en:'Species Sighting'},
+  {id:'tracks',hu:'Nyomok / Ürülék',en:'Tracks / Scat'},
+  {id:'nest',hu:'Fészek / Szaporodás',en:'Nest / Breeding'},
+  {id:'fire',hu:'Tűz / Füst',en:'Fire / Smoke'},
+  {id:'trash',hu:'Szemét',en:'Trash / Litter'},
+  {id:'water',hu:'Vízhiány / Árvíz',en:'Low Water / Flood'},
+  {id:'other',hu:'Egyéb',en:'Other'},
+];
+const SVS=[
+  {id:'low',hu:'Alacsony',en:'Low',c:'var(--low)',bg:'var(--lowb)'},
+  {id:'medium',hu:'Közepes',en:'Medium',c:'var(--med)',bg:'var(--medb)'},
+  {id:'high',hu:'Magas',en:'High',c:'var(--high)',bg:'var(--highb)'},
+  {id:'critical',hu:'Kritikus',en:'Critical',c:'var(--crit)',bg:'var(--critb)'},
+];
+const STS=[
+  {id:'open',hu:'Open',en:'Open',en:'Open',c:'#374151',bg:'#F3F4F6'},
+  {id:'assigned',hu:'Assigned',en:'Assigned',en:'Assigned',c:'#1D4ED8',bg:'#EFF6FF'},
+  {id:'in_progress',hu:'In Progress',en:'In Progress',en:'In Progress',c:'#92400E',bg:'#FFFBEB'},
+  {id:'escalated',hu:'Escalated',en:'Escalated',en:'Escalated',c:'var(--crit)',bg:'var(--critb)'},
+  {id:'resolved',hu:'Resolved',en:'Resolved',en:'Resolved',c:'var(--low)',bg:'var(--lowb)'},
+];
+const RLBL={ranger:'Ranger',coordinator:'Coordinator',supervisor:'Supervisor'};
+const RCLR={ranger:'#166534',coordinator:'#1D4ED8',supervisor:'#7C3AED'};
+
+// ═══════════════ DB ═══════════════
+const DB={
+  get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('ir_'+k))??d}catch{return d}},
+  set:(k,v)=>localStorage.setItem('ir_'+k,JSON.stringify(v)),
+  me:()=>{try{return JSON.parse(localStorage.getItem('ir_me'))||null}catch{return null}},
+  setMe:(u)=>localStorage.setItem('ir_me',JSON.stringify(u)),
+};
+
+// ═══════════════ STATE ═══════════════
+let S={user:null,tab:'incidents',filter:'all',gps:null,gpsPending:false,photo:null};
+
+// ═══════════════ UTILS ═══════════════
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const now=()=>new Date().toISOString();
+const fmt=d=>{const dt=new Date(d);return dt.toLocaleDateString('hu-HU',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})};
+const fmts=d=>{const dt=new Date(d);return dt.toLocaleDateString('hu-HU',{month:'short',day:'numeric'})};
+const inits=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+const sv=id=>SVS.find(s=>s.id===id)||SVS[1];
+const st=id=>STS.find(s=>s.id===id)||STS[0];
+const itype=id=>IT.find(t=>t.id===id)||IT[7];
+const otype=id=>OT.find(t=>t.id===id)||OT[6];
+const guser=id=>DB.get('users',[]).find(u=>u.id===id);
+const uname=id=>{const u=guser(id);return u?u.name:'—'};
+const isCoord=()=>S.user&&(S.user.role==='coordinator'||S.user.role==='supervisor');
+const isSuper=()=>S.user&&S.user.role==='supervisor';
+
+// ═══════════════ GPS ═══════════════
+function startGPS(){
+  if(S.gps)return;S.gpsPending=true;updGPS();
+  navigator.geolocation.getCurrentPosition(
+    p=>{S.gps={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};S.gpsPending=false;updGPS()},
+    ()=>{S.gpsPending=false;updGPS()},
+    {timeout:10000,maximumAge:30000}
+  );
+}
+function updGPS(){
+  const el=document.getElementById('gps-span');if(!el)return;
+  el.textContent=S.gpsPending?'Acquiring GPS…':S.gps?`${S.gps.lat}°N ${S.gps.lng}°K`:'GPS unavailable';
+}
+
+
+// ═══════════════ LOGIN ═══════════════
+function renderLogin(){
+  const el=document.getElementById('login');
+  el.style.display='flex';el.style.flexDirection='column';
+  document.getElementById('shell').classList.remove('on');
+  if(LS.step==='pin') _renderPIN(el);
+  else _renderSelect(el);
+}
+function _renderSelect(el){
+  const users=DB.get('users',[]);
+  const cards=users.map(u=>`
+    <div class="ugcard" onclick="selUser(${JSON.stringify(u.id)})">
+      <div class="ugav">${u.initials}</div>
+      <div class="ugname">${u.name}</div>
+      <div class="ugrole">${RLBL[u.role]}</div>
+    </div>`).join('');
+  el.innerHTML=`<div class="lt">
+    <div class="ll">iRanger</div>
+    <div class="ls">Wildlife Conservation Field App</div>
+    <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,.45);letter-spacing:.09em;text-transform:uppercase;margin-bottom:16px">Who are you?</div>
+    <div class="user-grid">${cards}</div>
+    </div>`;
+}
+function _renderPIN(el){
+  const u=LS.user;
+  const dots=[0,1,2,3].map(i=>`<div class="pdot${i<LS.pin.length?' on':''}"></div>`).join('');
+  const errMsg=LS.err?'Incorrect PIN — try again':'';
+  const keys=[1,2,3,4,5,6,7,8,9,'⌫',0,'OK'];
+  const pad=keys.map(k=>`<button class="nk${k==='OK'?' nk-ok':k==='⌫'?' nk-del':''}" onclick="pinKey(${JSON.stringify(String(k))})">${k}</button>`).join('');
+  el.innerHTML=`<div class="lt">
+    <div class="pin-wrap">
+      <div class="pin-user">
+        <div class="pin-av">${u.initials}</div>
+        <div class="pin-name">${u.name}</div>
+        <div class="pin-role">${RLBL[u.role]}</div>
+      </div>
+      <div class="pin-dots${LS.err?' shk':''}">${dots}</div>
+      <div class="pin-err">${errMsg}</div>
+      <div class="numpad">${pad}</div>
+      <button class="pin-back" onclick="LS.step='select';LS.err=false;LS.pin='';renderLogin()">← Back</button>
+    </div>
+    </div>`;
+}
+function selUser(id){
+  const u=guser(id);if(!u)return;
+  LS={step:'pin',user:u,pin:'',err:false};renderLogin();
+}
+function pinKey(k){
+  if(k==='⌫'){LS.pin=LS.pin.slice(0,-1);LS.err=false;renderLogin();return;}
+  if(k==='OK'){if(LS.pin.length===4)verifyPIN();return;}
+  if(LS.pin.length>=4)return;
+  LS.pin+=String(k);renderLogin();
+  if(LS.pin.length===4)setTimeout(verifyPIN,150);
+}
+function verifyPIN(){
+  const users=DB.get('users',[]);
+  const stored=users.find(x=>x.id===LS.user.id);
+  if(!stored){LS.err=true;LS.pin='';renderLogin();return;}
+  // No PIN set yet → first entry becomes their PIN
+  if(!stored.pin){stored.pin=LS.pin;DB.set('users',users);}
+  if(stored.pin===LS.pin){
+    S.user=stored;DB.setMe(stored);
+    LS={step:'select',user:null,pin:'',err:false};
+    document.getElementById('login').style.display='none';
+    document.getElementById('shell').classList.add('on');
+    render();
+  }else{LS.err=true;LS.pin='';renderLogin();}
+}
+
+function startApp(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('shell').classList.add('on');
+  S.tab='incidents';render();
+}
+
+// ═══════════════ MAIN RENDER ═══════════════
+function render(){
+  renderHeader();renderSidebar();renderNav();renderMain();
+}
+
+function renderHeader(){
+  const u=S.user;const online=navigator.onLine;
+  document.getElementById('hdr').innerHTML=`
+    <div class="hl">iRanger</div>
+    <div class="${online?'ondot':'offdot'}"></div>
+    <div class="hbdg" style="background:${RCLR[u.role]}22;border-color:${RCLR[u.role]}66;color:${RCLR[u.role]}">${RLBL[u.role]}</div>
+    <div class="hav" onclick="setTab('profile')">${u.initials}</div>`;
+}
+
+function renderSidebar(){
+  const u=S.user;const online=navigator.onLine;
+  const inc=DB.get('incidents',[]);
+  const openU=inc.filter(i=>i.status==='open'&&!i.assignedTo).length;
+  const escU=inc.filter(i=>i.status==='escalated').length;
+  const myCount=inc.filter(i=>i.reportedBy===S.user.id||i.assignedTo===S.user.id).filter(i=>i.status!=='resolved').length;
+  const tabs=[
+    {id:'incidents',lbl:'My Cases',svg:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="9 11 12 14 16 9"/>',badge:myCount,onclick:"setTabMine()"},
+    {id:'incidents',lbl:'All Incidents',svg:'<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',badge:isCoord()&&openU?openU:0},
+    {id:'observe',lbl:'Observations',svg:'<circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>',badge:0},
+    {id:'dashboard',lbl:'Dashboard',svg:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',badge:isSuper()&&escU?escU:0,coordOnly:true},
+    {id:'profile',lbl:'Profile',svg:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>',badge:0},
+  ];
+  document.getElementById('sidebar').innerHTML=`
+    <div class="sb-brand"><div class="sb-logo">iRanger</div><div class="${online?'ondot':'offdot'}"></div></div>
+    <div class="sb-user" onclick="setTab('profile')">
+      <div class="sb-av">${u.initials}</div>
+      <div><div class="sb-name">${u.name}</div><div class="sb-role">${RLBL[u.role]}</div></div>
+    </div>
+    <div id="sb-nav">
+      ${tabs.filter(t=>!t.coordOnly||isCoord()).map(t=>{
+        const isActive=S.tab===t.id&&(t.onclick?S.filter==='mine':S.filter!=='mine'||t.lbl==='My Cases');
+        const clickFn=t.onclick||`setTab('${t.id}')`;
+        return`<div class="sbn${isActive?' on':''}" onclick="${clickFn}">
+          <svg viewBox="0 0 24 24">${t.svg}</svg>${t.lbl}
+          ${t.badge?`<span class="sbn-badge">${t.badge}</span>`:''}
+        </div>`;}).join('')}
+    </div>
+    <button class="sb-fab" onclick="openChoose()">+ New Entry</button>
+    <div class="sb-bottom"><div class="sb-status"><div class="${online?'ondot':'offdot'}"></div>${online?'Online':'Offline — data saved locally'}</div></div>`;
+}
+
+function renderNav(){
+  const inc=DB.get('incidents',[]);
+  const openU=inc.filter(i=>i.status==='open'&&!i.assignedTo).length;
+  const escU=inc.filter(i=>i.status==='escalated').length;
+  // Order: Incidents | Observe | +(center) | Dashboard | Profilee
+  const myCount2=inc.filter(i=>i.reportedBy===S.user.id||i.assignedTo===S.user.id).filter(i=>i.status!=='resolved').length;
+  const tabs=[
+    {id:'incidents',lbl:'My Cases',svg:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>',badge:myCount2,mine:true},
+    {id:'observe',lbl:'Observe',svg:'<circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>',badge:0},
+    {fab:true},
+    {id:'dashboard',lbl:'Dashboard',svg:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',badge:isSuper()&&escU?escU:0,coordOnly:true},
+    {id:'profile',lbl:'Profile',svg:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>',badge:0},
+  ];
+  document.getElementById('nav').innerHTML=tabs.map(t=>{
+    if(t.coordOnly&&!isCoord())return`<div class="nb"></div>`;
+    if(t.fab)return`<button class="nb-fab" onclick="openChoose()">
+      <div class="nb-fab-inner"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    </button>`;
+    const isOn=S.tab===t.id&&(t.mine?S.filter==='mine':true);
+    const clickFn=t.mine?`setTabMine()`:`setTab('${t.id}')`;
+    return`<button class="nb${isOn?' on':''}" onclick="${clickFn}">
+      ${t.badge?`<span class="nb-badge">${t.badge}</span>`:''}
+      <svg viewBox="0 0 24 24">${t.svg}</svg>
+      <span>${t.lbl}</span></button>`;
+  }).join('');
+}
+
+function setTab(t){
+  if(t==='incidents'&&S.tab!=='incidents') S.filter='mine';
+  S.tab=t;render();
+}
+function setTabMine(){S.tab='incidents';S.filter='mine';render();}
+function setTabAll(){S.tab='incidents';S.filter='all';render();}
+
+function renderMain(){
+  const m=document.getElementById('main');
+  if(S.tab==='incidents')rIncidents(m);
+  else if(S.tab==='observe')rObserve(m);
+  else if(S.tab==='dashboard')rDash(m);
+  else if(S.tab==='profile')rProfilee(m);
+}
+
+// ═══════════════ INCIDENTS ═══════════════
+function rIncidents(m){
+  const all=DB.get('incidents',[]);
+  const u=S.user;
+  let list=u.role==='ranger'?all.filter(i=>i.reportedBy===u.id||i.assignedTo===u.id):all;
+  const f=S.filter;
+  let filt;
+  if(f==='mine') filt=all.filter(i=>i.reportedBy===u.id||i.assignedTo===u.id);
+  else if(f==='all') filt=list;
+  else filt=list.filter(i=>i.status===f);
+  filt.sort((a,b)=>{
+    if(a.status==='resolved'&&b.status!=='resolved')return 1;
+    if(b.status==='resolved'&&a.status!=='resolved')return-1;
+    const o={critical:0,high:1,medium:2,low:3};
+    return(o[a.severity]??3)-(o[b.severity]??3);
+  });
+  const ftabs=isCoord()?
+    [{id:'mine',hu:'My Cases'},{id:'all',hu:'Mind',en:'All'},{id:'open',hu:'Open',en:'Open'},{id:'assigned',hu:'Assigned',en:'Assigned'},{id:'in_progress',hu:'In Progress',en:'In Progress'},{id:'escalated',hu:'Escalated',en:'Escalated'},{id:'resolved',hu:'Resolved',en:'Resolved'}]:
+    [{id:'mine',hu:'My Cases'},{id:'all',hu:'Mind',en:'All'},{id:'open',hu:'Open',en:'Open'},{id:'in_progress',hu:'In Progress',en:'In Progress'},{id:'resolved',hu:'Resolved',en:'Resolved'}];
+  m.innerHTML=`
+    <div class="fscroll"><div class="frow">${ftabs.map(ft=>`<button class="fp${S.filter===ft.id?' on':''}" onclick="setFilter('${ft.id}')">${ft[LANG]||ft.hu}</button>`).join('')}</div></div>
+    <div class="view" style="padding-top:16px">
+      ${filt.length?'<div class="inc-grid">'+filt.map(i=>incCard(i)).join('')+'</div>':
+        `<div class="empty"><div class="em-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="em-t">${f==='mine'?'No cases yet':'No incidents'}</div>
+        <div class="em-s">${f==='mine'?'Incidents you reported or that are assigned to you will appear here.':'Tap the + button to log a new entry.'}</div>
+        ${f==='mine'?'<button class="btn-p" style="margin-top:8px" onclick="setTabAll()">View all incidents</button>':''}</div>`}
+    </div>`;
+}
+
+function setFilter(f){S.filter=f;renderMain();}
+
+function incCard(i){
+  const sev=sv(i.severity);const sti=st(i.status);
+  const isMe=i.assignedTo===S.user.id;
+  const ass=i.assignedTo?`<span class="ias">→ ${uname(i.assignedTo)}</span>`:'';
+  const mineTag=isMe?`<span class="mine-tag">★ Neked kiosztva</span>`:'';
+  return`<div class="inc-card${isMe?' mine':''}" onclick="openDetail('${i.id}')">
+    <div class="icp">
+      <div class="sevbar" style="background:${isMe?'#F59E0B':sev.c}"></div>
+      <div class="ib">
+        <div class="it">${i.title}</div>
+        <div class="im">
+          ${mineTag}
+          <span class="stch" style="background:${sti.bg};color:${sti.c}">${sti.hu}</span>
+          <span class="tych">${itype(i.type)[LANG]}</span>
+          ${!isMe?ass:''}
+        </div>
+        <div class="itm">${uname(i.reportedBy)} · ${fmts(i.createdAt)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════ OBSERVATIONS ═══════════════
+function rObserve(m){
+  const obs=DB.get('observations',[]).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  const list=S.user.role==='ranger'?obs.filter(o=>o.reportedBy===S.user.id):obs;
+  const cards=list.map((o,idx)=>{
+    const border=idx<list.length-1?'border-bottom:1px solid var(--brd)':'';
+    return '<div class="oc" style="'+border+'">'
+      +'<div class="odot"></div>'
+      +'<div style="flex:1">'
+      +'<div class="ot">'+otype(o.type)[LANG]+'</div>'
+      +(o.notes?'<div class="on2">'+o.notes+'</div>':'')
+      +'<div class="om">'+uname(o.reportedBy)+' · '+fmts(o.createdAt)+(o.lat?' · '+o.lat+'°N':'')+'</div>'
+      +'</div>'
+      +(o.photoDataUrl?'<img class="oph" src="'+o.photoDataUrl+'">':'')
+      +'</div>';
+  }).join('');
+  m.innerHTML='<div class="view">'
+    +'<div class="sec">Field Observations'+(isCoord()?' (all)':' (mine)')+'</div>'
+    +(list.length
+      ?'<div class="card">'+cards+'</div>'
+      :'<div class="empty"><div class="em-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></div>'
+        +'<div class="em-t">No observations</div><div class="em-s">Log field observations using the + button.</div></div>')
+    +'</div>';
+}
+
+
+// ═══════════════ DASHBOARD ═══════════════
+function rDash(m){
+  const all=DB.get('incidents',[]);
+  const u=S.user;
+  const cnt={
+    open:all.filter(i=>i.status==='open').length,
+    in_progress:all.filter(i=>i.status==='in_progress').length,
+    escalated:all.filter(i=>i.status==='escalated').length,
+    resolved:all.filter(i=>i.status==='resolved').length,
+    mine:all.filter(i=>i.reportedBy===u.id||i.assignedTo===u.id).filter(i=>i.status!=='resolved').length,
+  };
+  const recent=[...all].sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+  const acts=recent.flatMap(i=>i.activity.map(a=>({...a,incTitle:i.title,incId:i.id}))).sort((a,b)=>b.timestamp.localeCompare(a.timestamp)).slice(0,10);
+  m.innerHTML=`<div class="view">
+    <div class="sec">Overview</div>
+    <div class="dash-grid">
+      <div class="dc" onclick="setTabMine()" style="border:2px solid #F59E0B;background:#FFFBEB"><div class="dn" style="color:#92400E">${cnt.mine}</div><div class="dl" style="color:#92400E">My Cases</div><div class="dsa" style="color:#B45309">Reported + Assigned →</div></div>
+      <div class="dc" onclick="drillDown('escalated')"><div class="dn" style="color:var(--crit)">${cnt.escalated}</div><div class="dl">Escalated</div><div class="dsa">Click to view →</div></div>
+      <div class="dc" onclick="drillDown('in_progress')"><div class="dn" style="color:var(--med)">${cnt.in_progress}</div><div class="dl">In Progress</div><div class="dsa">Click to view →</div></div>
+      <div class="dc" onclick="drillDown('open')"><div class="dn" style="color:#374151">${cnt.open}</div><div class="dl">Open</div><div class="dsa">Click to view →</div></div>
+      <div class="dc" onclick="drillDown('resolved')"><div class="dn" style="color:var(--low)">${cnt.resolved}</div><div class="dl">Resolved</div><div class="dsa">Click to view →</div></div>
+    </div>
+    <div class="sec" style="margin-top:6px">Team</div>
+    <div class="card">${DB.get('users',[]).map(u=>{
+      const uInc=all.filter(i=>i.assignedTo===u.id&&i.status!=='resolved').length;
+      return`<div class="tr" onclick="openUserProfilee('${u.id}')">
+        <div class="av-med">${u.initials}</div>
+        <div><div class="tn">${u.name}</div><div class="tr-role">${RLBL[u.role]}</div></div>
+        <div class="ts-wrap"><div class="ts-n">${uInc}</div><div class="ts-l">Active</div></div>
+      </div>`;}).join('')}</div>
+    <div class="sec" style="margin-top:6px">Recent Activity</div>
+    <div class="card">${acts.map(a=>{const u=guser(a.userId);return`<div class="ai">
+      <div class="av-sm" onclick="openUserProfilee('${a.userId}')" title="${u?u.name:'?'}">${u?u.initials:'?'}</div>
+      <div class="ac-b">
+        <div class="ac-t"><b>${u?u.name:'?'}</b> — <span onclick="openDetail('${a.incId}')" style="cursor:pointer;text-decoration:underline;color:var(--g8)">${a.incTitle}</span></div>
+        ${a.note?`<div class="ac-n">${a.note}</div>`:''}
+        <div class="ac-ts">${fmt(a.timestamp)}</div>
+      </div></div>`;}).join('')}
+    ${!acts.length?`<div style="padding:24px;text-align:center;font-size:14px;color:var(--t3)">No activity yet</div>`:''}
+    </div>
+  </div>`;
+}
+
+function drillDown(status){
+  S.tab='incidents';S.filter=status;render();
+}
+
+// ═══════════════ PROFILE ═══════════════
+function rProfilee(m){
+  const u=S.user;
+  const all=DB.get('incidents',[]);
+  const mine=all.filter(i=>i.reportedBy===u.id);
+  const obs=DB.get('observations',[]).filter(o=>o.reportedBy===u.id);
+  m.innerHTML=`
+    <div class="ph">
+      <div class="p-av">${u.initials}</div>
+      <div class="p-n">${u.name}</div>
+      <div class="p-r">${RLBL[u.role]}</div>
+      <div class="p-stats">
+        <div class="p-stat"><div class="p-sn">${mine.length}</div><div class="p-sl">Incidents</div></div>
+        <div class="p-stat"><div class="p-sn">${obs.length}</div><div class="p-sl">Observe</div></div>
+        <div class="p-stat"><div class="p-sn">${mine.filter(i=>i.status==='resolved').length}</div><div class="p-sl">Resolved</div></div>
+      </div>
+    </div>
+    <div class="view" style="padding:16px 20px">
+      <div class="card">
+        ${isSuper()?`<div class="mr" onclick="openUserAdmin()">
+          <div class="m-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div><div class="m-lbl">Manage Accounts</div><div class="m-sub">Roles and access</div></div>
+          <span class="m-arr">›</span>
+        </div>`:''}
+        <div class="mr" onclick="openChoose()">
+          <div class="m-ic"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div><div class="m-lbl">Log New Entry</div><div class="m-sub">Incident or observation</div></div>
+          <span class="m-arr">›</span>
+        </div>
+        <div class="mr" onclick="exportData()">
+          <div class="m-ic"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div><div class="m-lbl">Export Data</div><div class="m-sub">JSON, CSV, or Print Report</div></div>
+          <span class="m-arr">›</span>
+        </div>
+        <div class="mr" onclick="doLogout()">
+          <div class="m-ic"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+          <div><div class="m-lbl">Sign Out</div><div class="m-sub">${u.name}</div></div>
+          <span class="m-arr">›</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════ USER PROFILE MODAL ═══════════════
+function openUserProfilee(uid){
+  const u=guser(uid);if(!u)return;
+  const all=DB.get('incidents',[]);
+  const obs=DB.get('observations',[]);
+  const uInc=all.filter(i=>i.reportedBy===u.id||i.assignedTo===u.id);
+  const uObs=obs.filter(o=>o.reportedBy===u.id);
+  const active=uInc.filter(i=>i.status!=='resolved');
+  const resolved=uInc.filter(i=>i.status==='resolved');
+  openM(u.name,`
+    <div style="display:flex;align-items:center;gap:16px;padding:4px 0 20px;border-bottom:1px solid var(--brd);margin-bottom:20px">
+      <div class="p-av" style="width:64px;height:64px;font-size:20px;background:var(--gl);border:2px solid var(--g6);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--g8);font-weight:800">${u.initials}</div>
+      <div>
+        <div style="font-size:18px;font-weight:800;color:var(--t1)">${u.name}</div>
+        <div style="font-size:13px;font-weight:700;margin-top:4px;padding:3px 10px;border-radius:20px;display:inline-block;background:${RCLR[u.role]}18;color:${RCLR[u.role]}">${RLBL[u.role]}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:var(--bg);border-radius:var(--rs);padding:14px;text-align:center">
+        <div style="font-size:28px;font-weight:800;font-family:system-ui,sans-serif;font-weight:800;color:var(--g8)">${uInc.length}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-top:3px">Incidens</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--rs);padding:14px;text-align:center">
+        <div style="font-size:28px;font-weight:800;font-family:system-ui,sans-serif;font-weight:800;color:var(--med)">${active.length}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-top:3px">Aktív</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--rs);padding:14px;text-align:center">
+        <div style="font-size:28px;font-weight:800;font-family:system-ui,sans-serif;font-weight:800;color:var(--low)">${uObs.length}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-top:3px">Observe</div>
+      </div>
+    </div>
+    ${isSuper()?`<div class="det-sec" style="margin-bottom:20px">
+      <div class="dsh">Szerepkör módosítása</div>
+      <select class="asel" id="edit-role-${u.id}">
+        <option value="ranger"${u.role==='ranger'?' selected':''}>Ranger</option>
+        <option value="coordinator"${u.role==='coordinator'?' selected':''}>Koordinátor</option>
+        <option value="supervisor"${u.role==='supervisor'?' selected':''}>Felügyelő</option>
+      </select>
+      <button class="btn-p" onclick="saveRole('${u.id}')">Szerepkör mentése</button>
+    </div>`:''}
+    <div style="font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:11px">Aktív incidensek (${active.length})</div>
+    ${active.length?`<div class="card" style="margin-bottom:16px">${active.map(i=>{const sev=sv(i.severity);const sti=st(i.status);return`<div class="icp" style="cursor:pointer;border-bottom:1px solid var(--brd)" onclick="closeM();setTimeout(()=>openDetail('${i.id}'),100)">
+      <div class="sevbar" style="background:${sev.c}"></div>
+      <div class="ib"><div class="it" style="font-size:14px">${i.title}</div>
+        <div class="im"><span class="stch" style="background:${sti.bg};color:${sti.c}">${sti.hu}</span><span class="tych">${itype(i.type)[LANG]}</span></div>
+        <div class="itm">${fmts(i.createdAt)}</div>
+      </div></div>`;}).join('')}</div>`:
+    `<div style="padding:16px;text-align:center;font-size:14px;color:var(--t3)">Nincs aktív incidens</div>`}
+    ${resolved.length?`<div style="font-size:12px;font-weight:800;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:11px">Lezárt incidensek (${resolved.length})</div>
+    <div class="card">${resolved.slice(0,5).map(i=>`<div class="icp" style="cursor:pointer;border-bottom:1px solid var(--brd);opacity:.7" onclick="closeM();setTimeout(()=>openDetail('${i.id}'),100)">
+      <div class="sevbar" style="background:var(--low)"></div>
+      <div class="ib"><div class="it" style="font-size:14px">${i.title}</div>
+        <div class="itm">${fmts(i.createdAt)}</div>
+      </div></div>`).join('')}</div>`:''}
+  `);
+}
+
+function saveRole(uid){
+  const sel=document.getElementById('edit-role-'+uid);if(!sel)return;
+  const users=DB.get('users',[]);
+  const u=users.find(x=>x.id===uid);if(!u)return;
+  u.role=sel.value;DB.set('users',users);
+  // If editing current user, update
+  if(S.user.id===uid){S.user.role=u.role;DB.setMe(u);}
+  closeM();render();
+}
+
+// ═══════════════ ACCOUNT MANAGEMENT ═══════════════
+function openAccounts(){
+  const users=DB.get('users',[]);
+  openM('Manage Accounts',`
+    <div class="card">
+      ${users.map(u=>`<div class="urow" onclick="openUserProfilee('${u.id}')">
+        <div class="urow-av">${u.initials}</div>
+        <div>
+          <div class="urow-n">${u.name}</div>
+          <div class="urow-r" style="background:${RCLR[u.role]}18;color:${RCLR[u.role]}">${RLBL[u.role]}</div>
+        </div>
+        <span style="margin-left:auto;color:var(--t3);font-size:18px">›</span>
+      </div>`).join('')}
+    </div>
+    <div style="margin-top:16px;padding:14px;background:var(--gl);border-radius:var(--rs);font-size:13px;font-weight:600;color:var(--g7);line-height:1.55">
+      A felhasználókra kattintva módosíthatja szerepkörüket és megtekintheti tevékenységeiket.
+    </div>`);
+}
+
+// ═══════════════ CHOOSE MODAL ═══════════════
+function openChoose(){
+  openM('New Entry',`<div class="chgrid">
+    <div class="chcard" onclick="openIncForm()">
+      <div class="ch-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="ch-l">Incidens</div><div class="ch-s">Ticket workflow</div>
+    </div>
+    <div class="chcard" onclick="openObsForm()">
+      <div class="ch-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></div>
+      <div class="ch-l">Observe</div><div class="ch-s">Quick field note</div>
+    </div>
+  </div>`);
+}
+
+// ═══════════════ INCIDENT FORM ═══════════════
+function openIncForm(){
+  S.gps=null;S.photo=null;
+  const tOpts=IT.map(t=>`<option value="${t.id}">${t.hu}</option>`).join('');
+  const sBtns=SVS.map(s=>`<button class="sb2" id="sb-${s.id}" onclick="pickSev('${s.id}')" style="color:${s.c};border-color:${s.c}22">${s.hu}</button>`).join('');
+  openM('Log Incident',`
+    <div class="fr"><label>Típus</label><select class="fsel" id="f-type">${tOpts}</select></div>
+    <div class="fr"><label>Cím</label><input id="f-title" type="text" placeholder="Short description"></div>
+    <div class="fr"><label>Details</label><textarea id="f-desc" placeholder="Detailed description…"></textarea></div>
+    <div class="fr"><label>Súlyosság</label><div class="sbs">${sBtns}</div></div>
+    <div class="gps-r" id="gps-row"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg><span id="gps-span">Acquiring GPS…</span></div>
+    <button class="pbtn" id="pbtn" onclick="document.getElementById('photo-input').click()"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Attach photo</button>
+    <img id="pprev" class="pprev">
+    <input type="hidden" id="sel-sev" value="medium">`,
+    `<button class="btn-p" onclick="subInc()">Save Incident</button>`);
+  pickSev('medium');startGPS();
+}
+
+function pickSev(id){
+  document.getElementById('sel-sev').value=id;
+  SVS.forEach(s=>{const b=document.getElementById('sb-'+s.id);if(!b)return;b.classList.toggle('on',s.id===id);b.style.background=s.id===id?s.bg:'none';b.style.borderColor=s.id===id?s.c:s.c+'22';});
+}
+
+function handlePhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{S.photo=ev.target.result;
+    const p=document.getElementById('pprev'),b=document.getElementById('pbtn');
+    if(p){p.src=S.photo;p.style.display='block';}if(b)b.style.display='none';};
+  r.readAsDataURL(file);e.target.value='';
+}
+
+function subInc(){
+  const title=document.getElementById('f-title')?.value.trim();
+  const type=document.getElementById('f-type')?.value;
+  const desc=document.getElementById('f-desc')?.value.trim();
+  const sev=document.getElementById('sel-sev')?.value;
+  if(!title)return alert('Kérem adja meg a cím mezőt.');
+  const i={id:uid(),type,title,description:desc,severity:sev,status:'open',lat:S.gps?.lat||null,lng:S.gps?.lng||null,reportedBy:S.user.id,assignedTo:null,createdAt:now(),updatedAt:now(),photoDataUrl:S.photo||null,activity:[{userId:S.user.id,action:'created',note:desc||'',timestamp:now()}]};
+  const incs=DB.get('incidents',[]);incs.push(i);DB.set('incidents',incs);
+  closeM();S.tab='incidents';S.filter='all';render();
+}
+
+// ═══════════════ OBS FORM ═══════════════
+function openObsForm(){
+  S.gps=null;S.photo=null;
+  openM('Observe rögzítése',`
+    <div class="fr"><label>Típus</label><select class="fsel" id="o-type">${OT.map(t=>`<option value="${t.id}">${t.hu}</option>`).join('')}</select></div>
+    <div class="fr"><label>Species name (optional)</label><input id="o-sp" type="text" placeholder="e.g. White Stork"></div>
+    <div class="fr"><label>Megjegyzés</label><textarea id="o-notes" placeholder="Description…"></textarea></div>
+    <div class="gps-r" id="gps-row"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg><span id="gps-span">Acquiring GPS…</span></div>
+    <button class="pbtn" id="pbtn" onclick="document.getElementById('photo-input').click()"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Attach photo</button>
+    <img id="pprev" class="pprev">`,
+    `<button class="btn-p" onclick="subObs()">Observe mentése</button>`);
+  startGPS();
+}
+
+function subObs(){
+  const type=document.getElementById('o-type')?.value;
+  const sp=document.getElementById('o-sp')?.value.trim();
+  const notes=document.getElementById('o-notes')?.value.trim();
+  const o={id:uid(),type,notes:(sp?sp+' — ':'')+notes,lat:S.gps?.lat||null,lng:S.gps?.lng||null,reportedBy:S.user.id,createdAt:now(),photoDataUrl:S.photo||null};
+  const obs=DB.get('observations',[]);obs.push(o);DB.set('observations',obs);
+  closeM();S.tab='observe';render();
+}
+
+// ═══════════════ INCIDENT DETAIL ═══════════════
+function openDetail(id){
+  const incs=DB.get('incidents',[]);
+  const i=incs.find(x=>x.id===id);if(!i)return;
+  const sev=sv(i.severity);const sti=st(i.status);
+  const users=DB.get('users',[]);
+  // Supervisor can assign to anyone including self; coordinator assigns to rangers/coordinators
+  const assignableUsers=isSuper()?users:users.filter(u=>u.role==='ranger'||u.role==='coordinator');
+  const canAct=isCoord()||(S.user.id===i.assignedTo)||S.user.id===i.reportedBy;
+  const canRes=isSuper()||(isCoord()&&i.status!=='escalated');
+  let actions='';
+  if(i.status!=='resolved'){
+    if(isCoord()&&i.status==='open'){
+      actions+=`<div style="margin-bottom:14px">
+        <div class="dsh">Assignment</div>
+        <select class="asel" id="asel">
+          <option value="">Select a person…</option>
+          ${assignableUsers.map(u=>`<option value="${u.id}"${i.assignedTo===u.id?' selected':''}>${u.name}${S.user.id===u.id?' (én)':''} — ${RLBL[u.role]}</option>`).join('')}
+        </select>
+        <button class="btn-p" onclick="doAssign('${id}')">Assign</button>
+      </div>`;
+    }
+    if(isSuper()&&i.status==='assigned'){
+      actions+=`<div style="margin-bottom:14px">
+        <div class="dsh">Reassignment</div>
+        <select class="asel" id="reasign">
+          ${assignableUsers.map(u=>`<option value="${u.id}"${i.assignedTo===u.id?' selected':''}>${u.name}${S.user.id===u.id?' (én)':''} — ${RLBL[u.role]}</option>`).join('')}
+        </select>
+        <button class="btn-p" onclick="doReassign('${id}')">Reassignment</button>
+      </div>`;
+    }
+    if(canAct&&i.status==='assigned')actions+=`<button class="btn-p" style="margin-bottom:9px" onclick="advance('${id}','in_progress','Start Work.')">Start Work</button>`;
+    if(canAct&&i.status==='in_progress'){
+      actions+=`<div class="arow" style="margin-bottom:9px">
+        <button class="btn-r" onclick="advance('${id}','escalated','Escalated to supervisor.')">Escalate</button>
+        ${canRes?`<button class="btn-p" style="flex:1" onclick="showResolve('${id}')">Resolve</button>`:''}
+      </div>`;
+    }
+    if(canRes&&i.status==='escalated'){
+      actions+=`<textarea class="notein" id="res-note" placeholder="Resolution notes…"></textarea>
+        <button class="btn-p" onclick="doResolve('${id}')">Approve Resolution</button>`;
+    }
+  }
+  const actHtml=[...i.activity].reverse().map(a=>`<div class="al">
+    <div class="adot"></div>
+    <div><div class="aa">${uname(a.userId)} — <b>${a.action}</b></div>
+    ${a.note?`<div class="an">${a.note}</div>`:''}
+    <div class="ats">${fmt(a.timestamp)}</div></div></div>`).join('');
+  openM(i.title,`
+    <div class="dsb"><span class="dsl">Status</span><div style="display:flex;align-items:center;gap:8px"><span class="dsc" style="background:${sti.bg};color:${sti.c}">${sti.hu}</span>${i.assignedTo===S.user.id?'<span class="mine-tag">★ Neked kiosztva</span>':''}</div></div>
+    ${i.photoDataUrl?`<img src="${i.photoDataUrl}" style="width:100%;border-radius:var(--rs);margin-bottom:18px;max-height:200px;object-fit:cover">`:''}
+    <div class="det-sec">
+      <div class="dsh">Details</div>
+      <div class="dmr"><span class="dmk">Típus</span><span class="dmv">${itype(i.type)[LANG]}</span></div>
+      <div class="dmr"><span class="dmk">Súlyosság</span><span class="dmv" style="color:${sev.c}">${sev.hu}</span></div>
+      <div class="dmr"><span class="dmk">Bejelentő</span><span class="dmv" style="cursor:pointer;color:var(--g8)" onclick="closeM();setTimeout(()=>openUserProfilee('${i.reportedBy}'),120)">${uname(i.reportedBy)}</span></div>
+      <div class="dmr"><span class="dmk">Felelős</span><span class="dmv" style="${i.assignedTo?'cursor:pointer;color:var(--g8)':''}" onclick="${i.assignedTo?`closeM();setTimeout(()=>openUserProfilee('${i.assignedTo}'),120)`:''}">${i.assignedTo?uname(i.assignedTo):'Nincs kiosztva'}</span></div>
+      ${i.lat?`<div class="dmr"><span class="dmk">Helyszín</span><span class="dmv" style="font-size:12px;font-family:monospace">${i.lat}°N ${i.lng}°K</span></div>`:''}
+      <div class="dmr"><span class="dmk">Rögzítve</span><span class="dmv">${fmt(i.createdAt)}</span></div>
+    </div>
+    ${i.description?`<div class="det-sec"><div class="dsh">Description</div><div style="font-size:15px;font-weight:500;color:var(--t2);line-height:1.6">${i.description}</div></div>`:''}
+    ${actions?`<div class="det-sec"><div class="dsh">Actions</div>${actions}</div>`:''}
+    <div class="det-sec"><div class="dsh">Activity Log</div>${actHtml}</div>`);
+}
+
+function showResolve(id){
+  const el=document.getElementById('res-note-wrap');
+  if(!el)document.getElementById('resnote-'+id)?.style?.removeProperty('display');
+}
+
+function doAssign(id){
+  const v=document.getElementById('asel')?.value;if(!v)return;
+  const incs=DB.get('incidents',[]);const i=incs.find(x=>x.id===id);if(!i)return;
+  i.assignedTo=v;i.status='assigned';i.updatedAt=now();
+  i.activity.push({userId:S.user.id,action:'assigned',note:`Assigned to ${uname(v)}.`,timestamp:now()});
+  DB.set('incidents',incs);closeM();render();
+}
+
+function doReassign(id){
+  const v=document.getElementById('reasign')?.value;if(!v)return;
+  const incs=DB.get('incidents',[]);const i=incs.find(x=>x.id===id);if(!i)return;
+  i.assignedTo=v;i.updatedAt=now();
+  i.activity.push({userId:S.user.id,action:'reassigned',note:`Reassigned to ${uname(v)}.`,timestamp:now()});
+  DB.set('incidents',incs);closeM();render();
+}
+
+function advance(id,ns,note){
+  const incs=DB.get('incidents',[]);const i=incs.find(x=>x.id===id);if(!i)return;
+  i.status=ns;i.updatedAt=now();
+  i.activity.push({userId:S.user.id,action:ns,note,timestamp:now()});
+  DB.set('incidents',incs);closeM();render();
+}
+
+function doResolve(id){
+  const note=document.getElementById('res-note')?.value.trim()||'';
+  advance(id,'resolved',note||'Resolved.');
+}
+
+// ═══════════════ MODAL HELPERS ═══════════════
+function openM(title,body,footer){
+  const bg=document.getElementById('mbg');
+  const sh=document.getElementById('msh');
+  document.getElementById('mtitle').textContent=title;
+  document.getElementById('mbody').innerHTML=body;
+  const f=document.getElementById('mfooter');
+  if(footer){f.style.display='block';f.innerHTML=footer;}else{f.style.display='none';}
+  // Force display:flex first, then add .on in next frame so CSS transition fires
+  bg.style.display='flex';
+  sh.scrollTop=0;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>bg.classList.add('on'));
+  });
+}
+function closeM(){
+  const bg=document.getElementById('mbg');
+  bg.classList.remove('on');
+  setTimeout(()=>{if(!bg.classList.contains('on'))bg.style.display='none';},320);
+  S.photo=null;S.gps=null;
+}
+function handleMBG(e){if(e.target===document.getElementById('mbg'))closeM();}
+
+// ═══════════════ MISC ═══════════════
+function exportData(){
+  // Show export modal with format options
+  const incs=DB.get('incidents',[]);
+  const obs=DB.get('observations',[]);
+  const dateStr=new Date().toISOString().slice(0,10);
+  openM('Export Data',`
+    <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
+      <div style="font-size:13px;font-weight:600;color:var(--t3);margin-bottom:4px">
+        ${incs.length} incident${incs.length!==1?'s':''} · ${obs.length} observation${obs.length!==1?'s':''}
+      </div>
+
+      <div class="exp-card" onclick="exportJSON()">
+        <div class="exp-icon">{ }</div>
+        <div>
+          <div class="exp-title">Full Backup — JSON</div>
+          <div class="exp-sub">All incidents, observations and users. Use to restore or migrate.</div>
+        </div>
+      </div>
+
+      <div class="exp-card" onclick="exportCSV('incidents')">
+        <div class="exp-icon">⊞</div>
+        <div>
+          <div class="exp-title">Incidents — CSV</div>
+          <div class="exp-sub">Opens in Excel, Google Sheets, or any spreadsheet app.</div>
+        </div>
+      </div>
+
+      <div class="exp-card" onclick="exportCSV('observations')">
+        <div class="exp-icon">⊞</div>
+        <div>
+          <div class="exp-title">Observations — CSV</div>
+          <div class="exp-sub">All field observations with GPS coordinates and notes.</div>
+        </div>
+      </div>
+
+      <div class="exp-card" onclick="exportPrint()">
+        <div class="exp-icon">⎙</div>
+        <div>
+          <div class="exp-title">Print Report</div>
+          <div class="exp-sub">Formatted incident summary — PDF via browser print.</div>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function _download(content, filename, mime){
+  const blob=new Blob([content],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportJSON(){
+  const data={
+    exportedAt:now(),exportedBy:S.user.name,
+    incidents:DB.get('incidents',[]),
+    observations:DB.get('observations',[]),
+    users:DB.get('users',[]).map(u=>({id:u.id,name:u.name,role:u.role,initials:u.initials}))
+  };
+  _download(JSON.stringify(data,null,2),'iranger_backup_'+new Date().toISOString().slice(0,10)+'.json','application/json');
+}
+
+function exportCSV(type){
+  const dateStr=new Date().toISOString().slice(0,10);
+  if(type==='incidents'){
+    const rows=DB.get('incidents',[]);
+    const headers=['ID','Title','Type','Severity','Status','Reporter','Assigned To','Latitude','Longitude','Created','Updated','Description'];
+    const lines=[headers.join(',')];
+    rows.forEach(r=>{
+      lines.push([
+        r.id,
+        _csvCell(r.title),
+        r.type,
+        r.severity,
+        r.status,
+        _csvCell(uname(r.reportedBy)),
+        _csvCell(r.assignedTo?uname(r.assignedTo):''),
+        r.lat||'',
+        r.lng||'',
+        r.createdAt?new Date(r.createdAt).toLocaleString('en-GB'):'',
+        r.updatedAt?new Date(r.updatedAt).toLocaleString('en-GB'):'',
+        _csvCell(r.description||''),
+      ].join(','));
+    });
+    _download(lines.join('\n'),'iranger_incidents_'+dateStr+'.csv','text/csv;charset=utf-8;');
+  } else {
+    const rows=DB.get('observations',[]);
+    const headers=['ID','Type','Notes','Reporter','Latitude','Longitude','Date'];
+    const lines=[headers.join(',')];
+    rows.forEach(r=>{
+      lines.push([
+        r.id,
+        r.type,
+        _csvCell(r.notes||''),
+        _csvCell(uname(r.reportedBy)),
+        r.lat||'',
+        r.lng||'',
+        r.createdAt?new Date(r.createdAt).toLocaleString('en-GB'):'',
+      ].join(','));
+    });
+    _download(lines.join('\n'),'iranger_observations_'+dateStr+'.csv','text/csv;charset=utf-8;');
+  }
+}
+
+function _csvCell(v){
+  if(!v)return'';
+  const s=String(v).replace(/"/g,'""');
+  return s.includes(',')||s.includes('"')||s.includes('\n')?`"${s}"`:s;
+}
+
+function exportPrint(){
+  const incs=DB.get('incidents',[]);
+  const sevColor={critical:'#991B1B',high:'#9A3412',medium:'#92400E',low:'#166534'};
+  const stColor={open:'#374151',assigned:'#1D4ED8',in_progress:'#92400E',escalated:'#991B1B',resolved:'#166534'};
+  const rows=incs.map(i=>`
+    <tr>
+      <td style="font-weight:700;padding:8px 12px;border-bottom:1px solid #e2e8f0">${i.title}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">${i.type}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:${sevColor[i.severity]||'#000'};font-weight:700">${i.severity.toUpperCase()}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:${stColor[i.status]||'#000'};font-weight:700">${i.status.replace('_',' ')}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">${uname(i.reportedBy)}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">${i.assignedTo?uname(i.assignedTo):'—'}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;white-space:nowrap">${i.createdAt?new Date(i.createdAt).toLocaleDateString('en-GB'):''}</td>
+    </tr>`).join('');
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>iRanger Report — ${new Date().toLocaleDateString('en-GB')}</title>
+  <style>
+    body{font-family:-apple-system,sans-serif;font-size:13px;color:#1e293b;margin:0;padding:32px}
+    h1{font-size:22px;font-weight:800;color:#15803D;margin-bottom:4px}
+    .meta{font-size:12px;color:#64748b;margin-bottom:28px}
+    table{width:100%;border-collapse:collapse;margin-bottom:32px}
+    th{background:#f1f5f9;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0}
+    @media print{body{padding:16px}}
+  </style></head><body>
+  <h1>iRanger — Incident Report</h1>
+  <div class="meta">Generated ${new Date().toLocaleString('en-GB')} by ${S.user.name} · ${incs.length} incident${incs.length!==1?'s':''}</div>
+  <table><thead><tr>
+    <th>Title</th><th>Type</th><th>Severity</th><th>Status</th><th>Reporter</th><th>Assigned</th><th>Date</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+
+function doLogout(){
+  localStorage.removeItem('ir_me');S.user=null;
+  document.getElementById('shell').classList.remove('on');
+  const remaining=DB.get('users',[]);
+  if(!remaining.length) renderFirstRun();
+  else renderLogin();
+}
+
+// ═══════════════ LOGIN STATE ═══════════════
+let LS={step:'select',user:null,pin:'',err:false};
+
+// ═══════════════ USER ADMIN ═══════════════
+function openUserAdmin(){
+  const users=DB.get('users',[]);
+  const rows=users.map(u=>{
+    const isSelf=u.id===S.user.id;
+    return `<div class="adm-row">
+      <div class="urow-av">${u.initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="urow-n">${u.name}</div>
+        <div class="urow-r" style="background:${RCLR[u.role]}18;color:${RCLR[u.role]};margin-top:3px">${RLBL[u.role]}</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--t3);margin-right:10px;font-family:monospace">PIN: ••••</div>
+      <div class="adm-btns">
+        <button class="adm-btn adm-edit" onclick="openEditUser(${JSON.stringify(u.id)})">Edit</button>
+        ${!isSelf?`<button class="adm-btn adm-del" onclick="confirmDel(${JSON.stringify(u.id)},${JSON.stringify(u.name)})">Delete</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  openM('User Management',
+    `<div class="card" style="margin-bottom:16px">${rows}</div>
+     <button class="btn-p" onclick="openNewUser()">+ Add new user</button>`
+  );
+}
+
+function openNewUser(){
+  openM('New User',
+    `<div class="fr"><label>Full Name</label><input id="nu-name" type="text" placeholder="e.g. John Smith"></div>
+     <div class="fr"><label>Szerepkör</label>
+       <select id="nu-role" class="fsel">
+         <option value="ranger">Ranger</option>
+         <option value="coordinator">Koordinátor</option>
+         <option value="supervisor">Felügyelő</option>
+       </select>
+     </div>
+     <div class="fr"><label>PIN (4 digits)</label>
+       <input id="nu-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.4em;font-size:22px;text-align:center">
+     </div>`,
+    `<div class="arow">
+       <button class="btn-o" onclick="openUserAdmin()">Back</button>
+       <button class="btn-p" style="flex:1" onclick="saveNewUser()">Create</button>
+     </div>`
+  );
+}
+
+function saveNewUser(){
+  const name=(document.getElementById('nu-name')?.value||'').trim();
+  const role=document.getElementById('nu-role')?.value||'ranger';
+  const pin=(document.getElementById('nu-pin')?.value||'').trim();
+  if(!name)return alert('Please enter a name.');
+  if(!pin||pin.length!==4||!/^\d{4}$/.test(pin))return alert('PIN must be exactly 4 digits.');
+  const users=DB.get('users',[]);
+  users.push({id:uid(),name,role,pin,initials:inits(name)});
+  DB.set('users',users);
+  closeM();setTimeout(openUserAdmin,50);render();
+}
+
+function openEditUser(id){
+  const u=guser(id);if(!u)return;
+  openM('Edit User',
+    `<div class="fr"><label>Full Name</label><input id="eu-name" type="text" value="${u.name}"></div>
+     <div class="fr"><label>Szerepkör</label>
+       <select id="eu-role" class="fsel">
+         ${['ranger','coordinator','supervisor'].map(r=>`<option value="${r}"${u.role===r?' selected':''}>${RLBL[r]}</option>`).join('')}
+       </select>
+     </div>
+     <div class="fr"><label>New PIN (leave blank to keep)</label>
+       <input id="eu-pin" type="password" inputmode="numeric" maxlength="4" placeholder="Unchanged" style="letter-spacing:.4em;font-size:22px;text-align:center">
+     </div>`,
+    `<div class="arow">
+       <button class="btn-o" onclick="openUserAdmin()">Back</button>
+       <button class="btn-p" style="flex:1" onclick="saveEditUser(${JSON.stringify(id)})">Save</button>
+     </div>`
+  );
+}
+
+function saveEditUser(id){
+  const name=(document.getElementById('eu-name')?.value||'').trim();
+  const role=document.getElementById('eu-role')?.value||'ranger';
+  const pin=(document.getElementById('eu-pin')?.value||'').trim();
+  if(!name)return alert('Please enter a name.');
+  if(pin&&(pin.length!==4||!/^\d{4}$/.test(pin)))return alert('PIN must be exactly 4 digits.');
+  const users=DB.get('users',[]);
+  const u=users.find(x=>x.id===id);if(!u)return;
+  u.name=name;u.role=role;u.initials=inits(name);
+  if(pin)u.pin=pin;
+  DB.set('users',users);
+  if(S.user&&S.user.id===id){S.user={...u};DB.setMe(S.user);}
+  closeM();setTimeout(openUserAdmin,50);render();
+}
+
+function confirmDel(id,name){
+  if(!confirm('Delete user: '+name+'?'))return;
+  const users=DB.get('users',[]).filter(u=>u.id!==id);
+  DB.set('users',users);
+  const incs=DB.get('incidents',[]).map(i=>{
+    if(i.assignedTo===id)i.assignedTo=null;
+    return i;
+  });
+  DB.set('incidents',incs);
+  closeM();
+  if(!users.length){doLogout();}
+  else{setTimeout(openUserAdmin,50);render();}
+}
+
+
+// ═══════════════ FIRST RUN ═══════════════
+function renderFirstRun(){
+  const el=document.getElementById('login');
+  el.style.display='flex';el.style.flexDirection='column';
+  el.style.background='var(--g8)';
+  document.getElementById('shell').classList.remove('on');
+  el.innerHTML=`<div class="fr-wrap">
+    <div class="fr-logo">iRanger</div>
+    <div class="fr-tag">First Launch</div>
+    <div class="fr-card">
+      <h2>Create Supervisor Account</h2>
+      <p>Create a supervisor account to get started. You can add more team members later from the Profilee menu.</p>
+      <label class="fl">Full Name</label>
+      <input class="fi" id="fr-name" type="text" placeholder="e.g. Jane Smith">
+      <div class="fr-pin-row">
+        <div>
+          <label class="fl">PIN (4 digits)</label>
+          <input class="fi" id="fr-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.3em;font-size:20px;text-align:center">
+        </div>
+        <div>
+          <label class="fl">Confirm PIN</label>
+          <input class="fi" id="fr-pin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.3em;font-size:20px;text-align:center">
+        </div>
+      </div>
+      <div id="fr-err" style="color:#DC2626;font-size:13px;font-weight:600;margin-bottom:12px;display:none"></div>
+      <button class="btnp" onclick="submitFirstRun()">Set Up System →</button>
+    </div>
+  </div>`;
+}
+
+function submitFirstRun(){
+  const name=(document.getElementById('fr-name')?.value||'').trim();
+  const pin=(document.getElementById('fr-pin')?.value||'').trim();
+  const pin2=(document.getElementById('fr-pin2')?.value||'').trim();
+  const err=document.getElementById('fr-err');
+  const show=(msg)=>{err.textContent=msg;err.style.display='block';};
+  if(!name){show('Please enter your name.');return;}
+  if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){show('PIN must be exactly 4 digits.');return;}
+  if(pin!==pin2){show('PINs do not match.');return;}
+  err.style.display='none';
+  const u={id:uid(),name,role:'supervisor',pin,initials:inits(name)};
+  DB.set('users',[u]);
+  S.user=u;DB.setMe(u);
+  document.getElementById('login').style.display='none';
+  document.getElementById('shell').classList.add('on');
+  S.tab='incidents';S.filter='mine';
+  render();
+}
+
+
+// ═══════════════ INIT ═══════════════
+S.user=DB.me();
+const _users=DB.get('users',[]);
+if(!_users.length){
+  // No users at all → first-time setup
+  renderFirstRun();
+} else if(S.user){
+  // Sync with latest user data (role/name may have changed)
+  const fresh=guser(S.user.id);
+  if(fresh){
+    S.user=fresh;DB.setMe(fresh);
+    document.getElementById('login').style.display='none';
+    document.getElementById('shell').classList.add('on');
+    S.tab='incidents';S.filter='mine';
+    render();
+  } else {
+    // User was deleted — back to login
+    DB.setMe(null);S.user=null;renderLogin();
+  }
+} else {
+  renderLogin();
+}
+window.addEventListener('online',()=>render());
+window.addEventListener('offline',()=>render());
+</script>
+</body>
+</html>
